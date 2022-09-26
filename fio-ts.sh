@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -o
+#set -x
 # Author: Mik 
 # Version : v1.0.0
 # Description: SSD FIO performance test script
@@ -29,8 +29,13 @@ fi
 
 BS=(4k)
 QD=(1)
-TC=(4)
-MIXR=(100 95)
+TC=(1)
+MIXR=(100 0)
+
+
+function clean_results(){
+	rm -rf results/*
+}
 
 
 function test() {
@@ -67,7 +72,6 @@ function test() {
 						--iodepth="${qd}" --runtime=60 --ramp_time=30 --startdelay=30 --numjobs="${tc}" --name=seq \
 						--group_reporting --thread --log_avg_msec=1000 --write_bw_log="${dir}"/seq  \
 						--write_lat_log="${dir}"/seq --write_iops_log="${dir}"/seq  --output="${dir}"/seq
-						sleep 30s
 
 					elif (("$mixR" < 100)) && (("$mixR" > 0));then
 						#Random mixed reads and writes.
@@ -82,9 +86,9 @@ function test() {
 						--ioengine=libaio --iodepth="${qd}" --runtime=60 --ramp_time=30 --startdelay=30 --numjobs="${tc}" \
 						--name=seq --group_reporting --thread --log_avg_msec=1000 --write_bw_log="${dir}"/seq \
 						--write_lat_log="${dir}"/seq --write_iops_log="${dir}"/seq  --output="${dir}"/seq
-						
+					
 					else
-						echo The RW parameter is incorrect
+						echo Mixed read and write parameters are incorrect
 					fi
 
 				done
@@ -93,5 +97,5 @@ function test() {
 	done
 }
 
-
+clean_results
 test
